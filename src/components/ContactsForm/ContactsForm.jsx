@@ -1,65 +1,66 @@
-import { Component } from "react";
+import { useState } from "react";
 import css from "./ContactsForm.module.css"
 import PropTypes from 'prop-types';
 import { nanoid } from "nanoid";
 
-export class ContactsForm extends Component {
-    state = {
-        name: '',
-        number: '',
-      };
+export default function ContactsForm({ onSubmit }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-      handleChangeForm=(e)=>{
-        const{name, value} = e.currentTarget; 
-        this.setState({
-            [name]: value,
-        })
-      };
+  const handleChange = e =>{
+    const {name, value} = e.target;
 
-      handleSubmitForm=(e)=>{
-        e.preventDefault()
-        this.props.onSubmit({
-            name:this.state.name,
-            number:this.state.number,
-            id:nanoid()
-        });
-        
-        this.resetForm();
-      }
+    switch(name){
+      case 'name':
+        setName(value);
+        break;
 
-      resetForm =()=>{
-        this.setState({name:"", number:""})
-      }
-
-    render() {
-        return(
-          <form className={css.contactsForm} onSubmit={this.handleSubmitForm}>
-                <label> Name
-                <input
-      type="text"
-      name="name"
-      pattern="^[a-zA-Zа-яА-Я]+([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*$"
-      required
-      onChange={this.handleChangeForm}
-      value={this.state.name}
-    />
-                </label>
-                <label> Number
-                <input
-      type="tel"
-      name="number"
-      pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-      required
-      onChange={this.handleChangeForm}
-      value={this.state.number}
-    />
-                </label>
-                <button type="submit">Add contact</button>
-            </form>
-        )
+        case 'number' :
+          setNumber(value);
+          break;
     }
-};
+  }
 
-ContactsForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
+  const handleSubmitForm = (e) => {
+    e.preventDefault();
+    onSubmit({
+      name,
+      number,
+      id: nanoid()
+    });
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setName('');
+    setNumber('');
+  };
+    
+
+  return(
+    <form className={css.contactsForm} onSubmit={handleSubmitForm}>
+          <label> Name
+          <input
+type="text"
+name="name"
+pattern="^[a-zA-Zа-яА-Я]+([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*$"
+required
+onChange={handleChange}
+value={name}
+/>
+          </label>
+          <label> Number
+          <input
+type="tel"
+name="number"
+pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+required
+onChange={handleChange}
+value={number}
+/>
+          </label>
+          <button type="submit">Add contact</button>
+      </form>
+  )
+
+}
